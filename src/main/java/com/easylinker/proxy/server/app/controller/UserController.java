@@ -74,9 +74,13 @@ public class UserController {
                 device.setTopic("IN/DEVICE/" + appUser.getId() + "/" + deviceGroup.getId() + "/" + device.getId());
                 device.setDeviceGroup(deviceGroup);
                 deviceService.save(device);
-                return ReturnResult.returnTipMessage(1, "设备绑定成功!");
+                JSONObject returnJson = new JSONObject();
+                returnJson.put("state", 1);
+                returnJson.put("message", "设备绑定成功!");
+                returnJson.put("data",deviceService.findADevice(deviceId));
+                return returnJson;
             } else {
-                return ReturnResult.returnTipMessage(0, "设备已经绑定!");
+                return ReturnResult.returnTipMessage(0, "设备已经绑定过! ");
             }
         } else {
             return ReturnResult.returnTipMessage(0, "设备或者分组不存在!");
@@ -105,7 +109,11 @@ public class UserController {
                 device.setTopic("IN/DEVICE/" + appUser.getId() + "/" + deviceGroup.getId() + "/" + device.getId());
                 device.setDeviceGroup(deviceGroup);
                 deviceService.save(device);
-                return ReturnResult.returnTipMessage(1, "设备绑定默认成功!");
+                JSONObject returnJson = new JSONObject();
+                returnJson.put("state", 1);
+                returnJson.put("message", "设备绑定默认成功!");
+                returnJson.put("data",deviceService.findADevice(deviceId));
+                return returnJson;
             } else {
                 DeviceGroup newDeviceGroup = new DeviceGroup();
                 newDeviceGroup.setId(device.getId());
@@ -117,7 +125,11 @@ public class UserController {
                 device.setTopic("IN/DEVICE/" + appUser.getId() + "/" + newDeviceGroup.getId() + "/" + device.getId());
                 device.setDeviceGroup(newDeviceGroup);
                 deviceService.save(device);
-                return ReturnResult.returnTipMessage(1, "设备成功创建分组并绑定默认分组!");
+                JSONObject returnJson = new JSONObject();
+                returnJson.put("state", 1);
+                returnJson.put("message", "设备成功创建分组并绑定默认分组!");
+                returnJson.put("data",deviceService.findADevice(deviceId));
+                return returnJson;
             }
         } else {
             return ReturnResult.returnTipMessage(0, "设备不存在!");
