@@ -103,38 +103,45 @@ public class UserController {
         AppUser appUser = (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         long appUserId=appUser.getId();
         DeviceGroup deviceGroup=deviceGroupService.findADeviceGroupById(appUserId);
-        if (device != null || deviceGroup != null || deviceGroup.getAppUser().getId().longValue() == appUser.getId().longValue()) {
-            if (device.getAppUser() == null) {
-                device.setAppUser(appUser);
-                device.setTopic("IN/DEVICE/" + appUser.getId() + "/" + deviceGroup.getId() + "/" + device.getId());
-                device.setDeviceGroup(deviceGroup);
-                deviceService.save(device);
-                JSONObject returnJson = new JSONObject();
-                returnJson.put("state", 1);
-                returnJson.put("message", "设备绑定默认成功!");
-                returnJson.put("data",deviceService.findADevice(deviceId));
-                return returnJson;
+        if ((device != null)) {
+            if (deviceGroup != null) {
+                if (deviceGroup.getAppUser().getId().longValue() == appUser.getId().longValue() && device.getDeviceGroup()!=null) {
+                    JSONObject returnJson = new JSONObject();
+                    returnJson.put("state", 1);
+                    returnJson.put("message", "设备已经绑定默认群组!");
+                    returnJson.put("data", deviceService.getDeviceDetail(deviceId));
+                    return returnJson;
+                }else {
+                    device.setAppUser(appUser);
+                    device.setTopic("IN/DEVICE/" + appUser.getId() + "/" + deviceGroup.getId() + "/" + device.getId());
+                    device.setDeviceGroup(deviceGroup);
+                    deviceService.save(device);
+                    JSONObject returnJson = new JSONObject();
+                    returnJson.put("state", 1);
+                    returnJson.put("message", "设备绑定默认成功!");
+                    returnJson.put("data", deviceService.getDeviceDetail(deviceId));
+                    return returnJson;
+                }
             } else {
                 DeviceGroup newDeviceGroup = new DeviceGroup();
-                newDeviceGroup.setId(device.getId());
+                newDeviceGroup.setId(appUserId);
                 newDeviceGroup.setGroupName("DefaultGroup");
                 newDeviceGroup.setComment("默认分组");
                 newDeviceGroup.setAppUser(appUser);
                 deviceGroupService.save(newDeviceGroup);
-                device.setAppUser(appUser);
-                device.setTopic("IN/DEVICE/" + appUser.getId() + "/" + newDeviceGroup.getId() + "/" + device.getId());
                 device.setDeviceGroup(newDeviceGroup);
                 deviceService.save(device);
                 JSONObject returnJson = new JSONObject();
                 returnJson.put("state", 1);
                 returnJson.put("message", "设备成功创建分组并绑定默认分组!");
-                returnJson.put("data",deviceService.findADevice(deviceId));
+                returnJson.put("data", deviceService.getDeviceDetail(deviceId));
                 return returnJson;
             }
         } else {
-            return ReturnResult.returnTipMessage(0, "设备不存在!");
-        }
+                return ReturnResult.returnTipMessage(0, "设备不存在!");
+            }
     }
+
 
 
     /**
